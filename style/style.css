@@ -1,0 +1,39 @@
+
+
+:root {
+  color-scheme: dark;
+  
+  padding: 0;
+  margin: 0;
+}
+
+
+header {
+  margin-top: 10px;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  
+  color: black;
+  
+  background-color: cyan;
+  background-image: url(https://iso.500px.com/wp-content/uploads/2016/03/stock-photo-142984111.jpg) no-repeat center center;
+  
+  width: 100%;
+ 
+}
+
+h1{
+  /* nothing to add */
+}
+
+footer {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  
+  width: 100%;
+  
+  background-color: cyan;
+  color: black;
+}
+

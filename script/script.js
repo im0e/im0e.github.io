@@ -12,6 +12,7 @@ function random_emoji() {
 
 function showup() {
     sound.play();
+    sound.currentTime=0;
     clicks += 1
     var msg = document.getElementById("message");
     if(clicks >= 5){

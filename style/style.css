@@ -122,7 +122,6 @@ p.button:hover {
 }
 
 p.button:active{
-  border-top: 10px solid black;
   border-bottom: none;
   border-right: none;
 }

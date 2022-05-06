@@ -37,8 +37,8 @@ header {
   
   background-color: cyan;
   background-image: url(https://wallpaperaccess.com/full/242325.jpg);
-  filter: blur(5px);
-  -webkit-filter: blur(5px);
+  filter: grayscale(80%);
+  -webkit-filter: grayscale(80%);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;

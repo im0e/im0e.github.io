@@ -3,19 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>im0e - Terminal</title>
+    <title>im0e - Portfolio</title>
     <link rel="stylesheet" href="style/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Space+Grotesk&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
 </head>
 <body>
-    <canvas id="matrix-canvas"></canvas>
-    <div id="terminal">
-        <div id="output"></div>
-        <div id="input-line" class="input-line">
+    <div id="p5-canvas-container"></div>
+    <header>
+        <div class="logo">im0e</div>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#timeline">Timeline</a></li>
+            </ul>
+        </nav>
+        <div class="controls">
+            <div class="theme-switcher">
+                <button id="light-mode-btn">Light</button>
+                <button id="dark-mode-btn">Dark</button>
+            </div>
+            <button id="terminal-toggle-btn"><i class="fas fa-terminal"></i></button>
+        </div>
+    </header>
+
+    <main>
+        <section id="home">
+            <h1>Designer & Developer</h1>
+            <p>I believe web design can be more diverse and inspiring.</p>
+        </section>
+
+        <section id="about">
+            <h2>About Me</h2>
+            <p>From medicine to machines, my journey has been one of transformation. I started as a medical doctor, driven by a desire to heal. Now, I'm an AI Software Developer at Capsula.iq, channeling that same passion into building intelligent systems that can make a difference.</p>
+        </section>
+
+        <section id="timeline">
+            <h2>My Journey</h2>
+             <div class="timeline-container">
+                <div class="timeline-item">
+                    <h3>Medical Doctor</h3>
+                    <p>Graduated with an MBChB from Jabir bin Hayyan Medical University, College of Medicine.</p>
+                </div>
+                <div class="timeline-item">
+                    <h3>Hobbyist Programmer</h3>
+                    <p>Began my journey into the world of programming as a self-taught hobbyist, exploring different languages and technologies.</p>
+                </div>
+                <div class="timeline-item">
+                    <h3>AI Software Developer</h3>
+                    <p>Currently working as an AI Software Developer at <a href="https://capsula.iq" target="_blank">Capsula.iq</a>, where I build intelligent solutions.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2024 im0e</p>
+    </footer>
+
+    <div id="terminal" class="hidden">
+        <div class="terminal-header">
+            <span>im0e-terminal</span>
+            <button id="terminal-close-btn">&times;</button>
+        </div>
+        <div id="terminal-output"></div>
+        <div class="terminal-input-line">
             <span class="prompt">></span>
-            <span id="input" class="input" contenteditable="true" spellcheck="false"></span>
+            <span id="terminal-input" class="input" contenteditable="true" spellcheck="false"></span>
         </div>
     </div>
+
     <script src="script/script.js"></script>
 </body>
 </html>

@@ -120,7 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Interactive Terminal ---
     const terminal = document.getElementById('terminal');
     const terminalToggleBtn = document.getElementById('terminal-toggle-btn');
-    const terminalCloseBtn = document.getElementById('terminal-close-btn');
     const terminalOutput = document.getElementById('terminal-output');
     const terminalInput = document.getElementById('terminal-input');
 
@@ -203,5 +202,5 @@ My Journey:
     };
 
     terminalToggleBtn.addEventListener('click', openTerminal);
-    terminalCloseBtn.addEventListener('click', closeTerminal);
+    document.querySelector('.terminal-btn.red').addEventListener('click', closeTerminal);
 });

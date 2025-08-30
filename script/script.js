@@ -1,48 +1,129 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const canvas = document.getElementById('matrix-canvas');
-    const ctx = canvas.getContext('2d');
-    const output = document.getElementById('output');
-    const input = document.getElementById('input');
-    const terminal = document.getElementById('terminal');
+// --- p5.js Sketch ---
 
-    // --- Matrix Rain ---
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+let particles = [];
+const PARTICLE_COUNT = 50;
+const MAX_SPEED = 1;
+const INTERACTION_RADIUS = 150;
 
-    const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
-    const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const nums = '0123456789';
-    const alphabet = katakana + latin + nums;
+function setup() {
+    let canvas = createCanvas(windowWidth, windowHeight);
+    canvas.parent('p5-canvas-container');
 
-    const fontSize = 16;
-    const columns = canvas.width / fontSize;
-    const rainDrops = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push(new Particle());
+    }
+}
 
-    for (let x = 0; x < columns; x++) {
-        rainDrops[x] = 1;
+function draw() {
+    clear();
+    let particleColor = document.body.classList.contains('dark-mode') ? 255 : 0;
+
+    particles.forEach(p => {
+        p.update();
+        p.draw(particleColor);
+        p.checkInteraction(particles);
+    });
+}
+
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+}
+
+class Particle {
+    constructor() {
+        this.pos = createVector(random(width), random(height));
+        this.vel = p5.Vector.random2D().mult(random(0.5, MAX_SPEED));
+        this.acc = createVector(0, 0);
+        this.size = 3;
+        this.originalVel = this.vel.copy();
     }
 
-    const drawMatrix = () => {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    applyForce(force) {
+        this.acc.add(force);
+    }
 
-        ctx.fillStyle = '#0f0';
-        ctx.font = fontSize + 'px monospace';
+    update() {
+        // Repel from mouse
+        let mouse = createVector(mouseX, mouseY);
+        let repulsion = this.repel(mouse);
+        this.applyForce(repulsion);
 
-        for (let i = 0; i < rainDrops.length; i++) {
-            const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-            ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+        // Return to original velocity
+        let steering = p5.Vector.sub(this.originalVel, this.vel);
+        steering.limit(0.01);
+        this.applyForce(steering);
 
-            if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                rainDrops[i] = 0;
+        this.vel.add(this.acc);
+        this.vel.limit(MAX_SPEED);
+        this.pos.add(this.vel);
+        this.acc.mult(0); // Reset acceleration
+        this.edges();
+    }
+
+    draw(particleColor) {
+        noStroke();
+        fill(particleColor);
+        circle(this.pos.x, this.pos.y, this.size);
+    }
+
+    edges() {
+        if (this.pos.x < 0) this.pos.x = width;
+        if (this.pos.x > width) this.pos.x = 0;
+        if (this.pos.y < 0) this.pos.y = height;
+        if (this.pos.y > height) this.pos.y = 0;
+    }
+
+    checkInteraction(otherParticles) {
+        otherParticles.forEach(other => {
+            if (this !== other) {
+                let distance = dist(this.pos.x, this.pos.y, other.pos.x, other.pos.y);
+                if (distance < INTERACTION_RADIUS) {
+                    let alpha = map(distance, 0, INTERACTION_RADIUS, 150, 0);
+                    let particleColor = document.body.classList.contains('dark-mode') ? 255 : 0;
+                    stroke(particleColor, alpha);
+                    line(this.pos.x, this.pos.y, other.pos.x, other.pos.y);
+                }
             }
-            rainDrops[i]++;
-        }
-    };
+        });
+    }
 
-    setInterval(drawMatrix, 30);
+    repel(target) {
+        let force = p5.Vector.sub(this.pos, target);
+        let distance = force.mag();
+        if (distance < INTERACTION_RADIUS) {
+            let strength = map(distance, 0, INTERACTION_RADIUS, 1, 0);
+            force.setMag(strength * 5); // Increase the multiplier for a stronger push
+            return force;
+        }
+        return createVector(0, 0);
+    }
+}
+
+// --- Core Website Logic ---
+
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Theme Switcher ---
+    const lightModeBtn = document.getElementById('light-mode-btn');
+    const darkModeBtn = document.getElementById('dark-mode-btn');
+    const body = document.body;
+
+    body.classList.add('dark-mode'); // Default to dark mode
+
+    lightModeBtn.addEventListener('click', () => {
+        body.classList.remove('dark-mode');
+    });
+
+    darkModeBtn.addEventListener('click', () => {
+        body.classList.add('dark-mode');
+    });
 
     // --- Interactive Terminal ---
+    const terminal = document.getElementById('terminal');
+    const terminalToggleBtn = document.getElementById('terminal-toggle-btn');
+    const terminalCloseBtn = document.getElementById('terminal-close-btn');
+    const terminalOutput = document.getElementById('terminal-output');
+    const terminalInput = document.getElementById('terminal-input');
+
     const commands = {
         help: 'Available commands: help, about, timeline, contact, clear',
         about: 'I am a medical doctor turned AI Software Developer. I have a passion for learning and building new things.',
@@ -63,7 +144,7 @@ My Journey:
         let i = 0;
         const typingInterval = setInterval(() => {
             if (i < text.length) {
-                output.innerHTML += text.charAt(i);
+                terminalOutput.innerHTML += text.charAt(i);
                 i++;
                 terminal.scrollTop = terminal.scrollHeight;
             } else {
@@ -72,7 +153,7 @@ My Journey:
                 if (callback) callback();
                 processQueue();
             }
-        }, 50);
+        }, 20);
     };
 
     const processQueue = () => {
@@ -88,10 +169,10 @@ My Journey:
     };
 
     const processCommand = (cmd) => {
-        output.innerHTML += `> ${cmd}\n`;
+        terminalOutput.innerHTML += `> ${cmd}\n`;
 
         if (cmd === 'clear') {
-            output.innerHTML = '';
+            terminalOutput.innerHTML = '';
             return;
         }
 
@@ -99,18 +180,28 @@ My Journey:
         addToQueue(response + '\n');
     };
 
-    input.addEventListener('keydown', (e) => {
+    terminalInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            if (isTyping) return; // Don't accept commands while typing
-            const command = input.textContent.trim();
-            input.textContent = '';
+            if (isTyping) return;
+            const command = terminalInput.textContent.trim();
+            terminalInput.textContent = '';
             processCommand(command);
         }
     });
 
-    // Welcome message
-    addToQueue("Welcome to my portfolio. Type 'help' to see available commands.\n", () => {
-        input.focus();
-    });
+    const openTerminal = () => {
+        terminal.classList.remove('hidden');
+        terminalInput.focus();
+        if (terminalOutput.innerHTML === '') {
+            addToQueue("Welcome to the terminal. Type 'help' for a list of commands.\n");
+        }
+    };
+
+    const closeTerminal = () => {
+        terminal.classList.add('hidden');
+    };
+
+    terminalToggleBtn.addEventListener('click', openTerminal);
+    terminalCloseBtn.addEventListener('click', closeTerminal);
 });
